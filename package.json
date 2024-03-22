@@ -1,0 +1,40 @@
+{
+  "name": "effect-react",
+  "version": "0.0.1",
+  "description": "React bindings for effect",
+  "scripts": {
+    "tsc": "tsc -p tsconfig.json",
+    "bundle": "tsup",
+    "upload": "pnpm bundle && npm publish"
+  },
+  "keywords": [
+    "effect"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maks1db/effect-react.git"
+  },
+  "author": "Maksim Skvortsov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maks1db/effect-react/issues"
+  },
+  "homepage": "https://github.com/maks1db/effect-react#readme",
+  "dependencies": {
+    "effect": "^2.4.11",
+    "react": "^18.2.0",
+    "ramda": "~0.29.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.3.1",
+    "@typescript-eslint/parser": "^7.3.1",
+    "eslint": "^8.57.0",
+    "tsup": "~8.0.2",
+    "@types/react": "~18.2.67",
+    "@types/ramda": "~0.29.11",
+    "typescript": "^5.4.3"
+  },
+  "main": "dist/src/cjs/index.js",
+  "module": "dist/src/esm/index.js",
+  "types": "dist/src/types/index.d.ts"
+}
