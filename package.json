@@ -34,7 +34,10 @@
     "@types/ramda": "~0.29.11",
     "typescript": "^5.4.3"
   },
-  "main": "dist/src/cjs/index.js",
-  "module": "dist/src/esm/index.js",
-  "types": "dist/src/types/index.d.ts"
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.mts",
+  "files": [
+    "dist"
+  ]
 }
