@@ -116,17 +116,21 @@ const makeSubscribeEffect =
       };
     };
 
+export type RepositoryType<StoreType> = { Tag: Context.Tag<any, BaseImplementation<StoreType>>} | Context.Tag<any, BaseImplementation<StoreType>>;
+
 export function useSubscription<StoreType>(
-  contextRef: Context.Tag<any, BaseImplementation<StoreType>>,
+  repository: RepositoryType<StoreType>,
 ): StoreType;
 export function useSubscription<StoreType, SelectorFnType>(
-  contextRef: Context.Tag<any, BaseImplementation<StoreType>>,
+  repository: RepositoryType<StoreType>,
   selectorFn: (store: StoreType) => SelectorFnType,
 ): SelectorFnType;
 export function useSubscription<StoreType, SelectorFnType>(
-  contextRef: Context.Tag<any, BaseImplementation<StoreType>>,
+  repository: RepositoryType<StoreType>,
   selectorFn?: (store: StoreType) => SelectorFnType,
 ) {
+
+  const contextRef = 'Tag' in repository ? repository.Tag : repository;
   const runtime = useRuntime();
   const subscribe = useRef<(db: () => void) => () => void>();
   if (!subscribe.current && runtime) {

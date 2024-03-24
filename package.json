@@ -1,6 +1,6 @@
 {
-  "name": "effect-react",
-  "version": "0.0.1",
+  "name": "binding-effect-react",
+  "version": "0.0.4",
   "description": "React bindings for effect",
   "scripts": {
     "tsc": "tsc -p tsconfig.json",

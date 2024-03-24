@@ -11,3 +11,4 @@ export {
 export { makeInspectInstance } from './inspect';
 export { makeRepository } from './repository'; 
 
+export type { RepositoryTag } from './repository';

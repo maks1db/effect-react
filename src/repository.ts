@@ -1,6 +1,6 @@
 import { Context, Effect, Layer, Stream, SubscriptionRef } from 'effect';
 
-interface Tag {
+export interface RepositoryTag {
   readonly _: unique symbol;
 }
 
@@ -9,7 +9,7 @@ export const makeRepository = <RepositoryType>(
   defaultValue: RepositoryType,
 ) => {
 
-  const Tag = Context.GenericTag<Tag, BaseImplementation<RepositoryType>>(name);
+  const Tag = Context.GenericTag<RepositoryTag, BaseImplementation<RepositoryType>>(name);
 
   const Live = Layer.scoped(
     Tag,
@@ -34,3 +34,4 @@ export interface BaseImplementation<RepositoryType> {
     fn: (store: RepositoryType) => RepositoryType,
   ) => Effect.Effect<void, never, never>;
 }
+

@@ -72,7 +72,7 @@ export const makeInspectInstance = (name: string) => {
       };
 
   const makeInspectorEffectProgram = (
-    stores: ({ Live: Context.Tag<any, BaseImplementation<any>>} | StreamEffect<any>)[],
+    stores: ({ Tag: Context.Tag<any, BaseImplementation<any>>} | StreamEffect<any>)[],
     defaultName?: string,
   ) => {
     return Effect.gen(function* ($) {
@@ -81,8 +81,8 @@ export const makeInspectInstance = (name: string) => {
       }
 
       const streams$ = stores.map(x => {
-        if ('Live' in x) {
-          return x.Live;
+        if ('Tag' in x) {
+          return x.Tag;
         }
         return x;
       })
