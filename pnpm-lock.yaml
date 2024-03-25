@@ -6,10 +6,10 @@ settings:
 
 dependencies:
   effect:
-    specifier: ^2.4.11
-    version: 2.4.11
+    specifier: ^2.4.13
+    version: 2.4.13
   ramda:
-    specifier: ~0.29.1
+    specifier: ^0.29.1
     version: 0.29.1
   react:
     specifier: ^18.2.0
@@ -858,8 +858,8 @@ packages:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
     dev: true
 
-  /effect@2.4.11:
-    resolution: {integrity: sha512-BMfpWloJdV8+lVGNCesOpE6e5k27nL7F5BiWtheOEyWEQiWkM6uLK6pQ1MK9bDmFELiqe961CHFqiIY9HymLFw==}
+  /effect@2.4.13:
+    resolution: {integrity: sha512-QTQgeJOn4S4RdDWHieHc/aaB2sdRLN0zeF+tMEDvGn19tFcZOmqpnSKcYuiGvHaCTE0viexFbBH+iAgfg9Gurw==}
     dev: false
 
   /emoji-regex@8.0.0:

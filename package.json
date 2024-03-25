@@ -1,6 +1,6 @@
 {
   "name": "binding-effect-react",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "React bindings for effect",
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
@@ -20,10 +20,10 @@
     "url": "https://github.com/maks1db/effect-react/issues"
   },
   "homepage": "https://github.com/maks1db/effect-react#readme",
-  "dependencies": {
-    "effect": "^2.4.11",
+  "peerDependencies": {
+    "effect": "^2.4.13",
     "react": "^18.2.0",
-    "ramda": "~0.29.1"
+    "ramda": "^0.29.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.3.1",
