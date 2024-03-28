@@ -38,8 +38,8 @@ class InstanceStore {
   }
 }
 
-export const makeInspectInstance = (name: string) => {
-  const _instance = initExtension(name);
+export const makeInspectInstance = (name: string, enableInspector = false) => {
+  const _instance = initExtension(name, enableInspector);
   const store = new InstanceStore();
 
   const makeStream =
