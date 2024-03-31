@@ -49,11 +49,11 @@ export const makeAppRuntime = <A, E, R>(layer: Layer.Layer<A, E, R>) =>
     };
   });
 
-export const EffectRuntimeProvider = createContext<Runtime.Runtime<any>>(
+export const EffectRuntimeContext = createContext<Runtime.Runtime<any>>(
   Runtime.defaultRuntime as any,
 );
 
-export const useRuntime = () => useContext(EffectRuntimeProvider);
+export const useRuntime = () => useContext(EffectRuntimeContext);
 
 export const useProgram = <A, E, R>(program: Effect.Effect<A, E, R>) => {
   const runtime = useRuntime();

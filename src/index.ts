@@ -1,5 +1,5 @@
 export { 
-  EffectRuntimeProvider, 
+  EffectRuntimeContext, 
   makeAppRuntime, 
   runForkEffect, 
   useEffectStream, 
