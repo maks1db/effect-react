@@ -9,9 +9,9 @@ export class GlobalEffectRuntime {
   addForkProgram(program: Effect.Effect<void, any, any>) {
     this.programs.push(program);
     this.runFork();
-  } 
+  }
 
-  runFork() { 
+  runFork() {
     if (!this.runtime) {
       return;
     }

@@ -7,7 +7,7 @@ import {
   Exit,
   Fiber,
   Layer,
-  pipe, 
+  pipe,
   Runtime,
   Scope,
   Stream,
@@ -19,7 +19,7 @@ import {
   useEffect,
   useRef,
   useSyncExternalStore,
-} from 'react'; 
+} from 'react';
 
 import { GlobalEffectRuntime } from './GlobalEffectRuntime';
 import { BaseImplementation } from './repository';
@@ -74,21 +74,21 @@ const makeSubscribeTag =
     runtime: Runtime.Runtime<unknown>,
     selectorFn?: (store: A) => B,
   ) =>
-    (onChange: () => void) => {
-      const fib = Effect.flatMap(tag, ref =>
-        pipe(
-          ref.changes,
-          Stream.map(store => (selectorFn ? selectorFn(store) : store)),
-          Stream.changes,
-          Stream.tap(() => Effect.sync(onChange)),
-          Stream.runDrain,
-        ),
-      );
-      const fiber = Runtime.runFork(runtime)(fib);
-      return () => {
-        return Effect.runPromise(Fiber.interrupt(fiber));
-      };
+  (onChange: () => void) => {
+    const fib = Effect.flatMap(tag, ref =>
+      pipe(
+        ref.changes,
+        Stream.map(store => (selectorFn ? selectorFn(store) : store)),
+        Stream.changes,
+        Stream.tap(() => Effect.sync(onChange)),
+        Stream.runDrain,
+      ),
+    );
+    const fiber = Runtime.runFork(runtime)(fib);
+    return () => {
+      return Effect.runPromise(Fiber.interrupt(fiber));
     };
+  };
 
 const makeSubscribeEffect =
   <A>(
@@ -96,27 +96,29 @@ const makeSubscribeEffect =
     runtime: Runtime.Runtime<unknown>,
     ref: MutableRefObject<A | undefined>,
   ) =>
-    (onChange: () => void) => {
-      const fib = Effect.flatMap(program, stream$ =>
-        pipe(
-          stream$,
-          Stream.changes,
-          Stream.tap(data =>
-            Effect.sync(() => {
-              ref.current = data;
-              onChange();
-            }),
-          ),
-          Stream.runDrain,
+  (onChange: () => void) => {
+    const fib = Effect.flatMap(program, stream$ =>
+      pipe(
+        stream$,
+        Stream.changes,
+        Stream.tap(data =>
+          Effect.sync(() => {
+            ref.current = data;
+            onChange();
+          }),
         ),
-      );
-      const fiber = Runtime.runFork(runtime)(fib);
-      return () => {
-        return Effect.runPromise(Fiber.interrupt(fiber));
-      };
+        Stream.runDrain,
+      ),
+    );
+    const fiber = Runtime.runFork(runtime)(fib);
+    return () => {
+      return Effect.runPromise(Fiber.interrupt(fiber));
     };
+  };
 
-export type RepositoryType<StoreType> = { Tag: Context.Tag<any, BaseImplementation<StoreType>>} | Context.Tag<any, BaseImplementation<StoreType>>;
+export type RepositoryType<StoreType> =
+  | { Tag: Context.Tag<any, BaseImplementation<StoreType>> }
+  | Context.Tag<any, BaseImplementation<StoreType>>;
 
 export function useSubscription<StoreType>(
   repository: RepositoryType<StoreType>,
@@ -129,7 +131,6 @@ export function useSubscription<StoreType, SelectorFnType>(
   repository: RepositoryType<StoreType>,
   selectorFn?: (store: StoreType) => SelectorFnType,
 ) {
-
   const contextRef = 'Tag' in repository ? repository.Tag : repository;
   const runtime = useRuntime();
   const subscribe = useRef<(db: () => void) => () => void>();

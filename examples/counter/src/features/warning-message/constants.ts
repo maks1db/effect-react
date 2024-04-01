@@ -1,0 +1,1 @@
+export const TIMEOUT_WARNING_SECONDS = 3;

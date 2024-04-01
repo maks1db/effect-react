@@ -7,12 +7,8 @@ import { assocPath, mergeDeepRight } from 'ramda';
 import { BaseImplementation } from './repository';
 import { StreamEffect } from './types';
 
-
-
-
-const initExtension = (name: string, isDev = true) => 
+const initExtension = (name: string, isDev = true) =>
   Option.gen(function* ($) {
-        
     if (!isDev) {
       return yield* $(Option.none());
     }
@@ -22,7 +18,7 @@ const initExtension = (name: string, isDev = true) =>
 
     const instance = extension.connect({ name });
 
-    return yield* $(Option.some(instance)); 
+    return yield* $(Option.some(instance));
   });
 
 class InstanceStore {
@@ -44,35 +40,38 @@ export const makeInspectInstance = (name: string, enableInspector = false) => {
 
   const makeStream =
     (defaultName?: string) =>
-      (value: Context.Tag<any, BaseImplementation<any>> | StreamEffect<any>) => {
-        const sendToDevtools = (currentName: string) =>
-          Stream.tap(data =>
-            Effect.tap(_instance, instance => {
-              const logObject = assocPath(currentName.split('/'), data, {});
-              const result = store.update(logObject);
+    (value: Context.Tag<any, BaseImplementation<any>> | StreamEffect<any>) => {
+      const sendToDevtools = (currentName: string) =>
+        Stream.tap(data =>
+          Effect.tap(_instance, instance => {
+            const logObject = assocPath(currentName.split('/'), data, {});
+            const result = store.update(logObject);
 
-              instance.send(currentName, result);
-            }),
-          );
-        if (Context.isTag(value)) {
-          return Effect.flatMap(value, ref => {
-            return ref.changes.pipe(sendToDevtools(value.key), Stream.runDrain);
-          });
-        }
+            instance.send(currentName, result);
+          }),
+        );
+      if (Context.isTag(value)) {
+        return Effect.flatMap(value, ref => {
+          return ref.changes.pipe(sendToDevtools(value.key), Stream.runDrain);
+        });
+      }
 
-        if (Effect.isEffect(value)) {
-          return value.pipe(
-            Effect.flatMap(
-              flow(sendToDevtools(`${defaultName}/combined$`), Stream.runDrain),
-            ),
-          );
-        }
+      if (Effect.isEffect(value)) {
+        return value.pipe(
+          Effect.flatMap(
+            flow(sendToDevtools(`${defaultName}/combined$`), Stream.runDrain),
+          ),
+        );
+      }
 
-        return Effect.succeed(0);
-      };
+      return Effect.succeed(0);
+    };
 
   const makeInspectorEffectProgram = (
-    stores: ({ Tag: Context.Tag<any, BaseImplementation<any>>} | StreamEffect<any>)[],
+    stores: (
+      | { Tag: Context.Tag<any, BaseImplementation<any>> }
+      | StreamEffect<any>
+    )[],
     defaultName?: string,
   ) => {
     return Effect.gen(function* ($) {
@@ -80,12 +79,13 @@ export const makeInspectInstance = (name: string, enableInspector = false) => {
         return;
       }
 
-      const streams$ = stores.map(x => {
-        if ('Tag' in x) {
-          return x.Tag;
-        }
-        return x;
-      })
+      const streams$ = stores
+        .map(x => {
+          if ('Tag' in x) {
+            return x.Tag;
+          }
+          return x;
+        })
         .map(makeStream(defaultName));
 
       yield* $(Effect.all(streams$, { concurrency: 'unbounded' }));
@@ -95,8 +95,6 @@ export const makeInspectInstance = (name: string, enableInspector = false) => {
   return { makeInspectorEffectProgram };
 };
 
-
-
 type ReduxDevTools = {
   connect: (params: { name: string }) => {
     send: (type: string, value: Record<string, unknown>) => void;
@@ -104,7 +102,6 @@ type ReduxDevTools = {
 };
 interface MyWindow extends Window {
   __REDUX_DEVTOOLS_EXTENSION__?: ReduxDevTools;
-
 }
 
 declare let window: MyWindow;

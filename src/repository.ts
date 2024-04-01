@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Context, Effect, Layer, Stream, SubscriptionRef } from 'effect';
 
 export interface RepositoryTag {
@@ -8,8 +9,10 @@ export const makeRepository = <RepositoryType>(
   name: string,
   defaultValue: RepositoryType,
 ) => {
-
-  const Tag = Context.GenericTag<RepositoryTag, BaseImplementation<RepositoryType>>(name);
+  const Tag = Context.GenericTag<
+    RepositoryTag,
+    BaseImplementation<RepositoryType>
+  >(name);
 
   const Live = Layer.scoped(
     Tag,
@@ -20,9 +23,9 @@ export const makeRepository = <RepositoryType>(
         changes: ref.changes,
         update: fn => SubscriptionRef.update(ref, fn),
         get: () => SubscriptionRef.get(ref),
-        reset: () => SubscriptionRef.set(ref, defaultValue)
+        reset: () => SubscriptionRef.set(ref, defaultValue),
       };
-    }), 
+    }),
   );
 
   return { Tag, Live };
@@ -34,6 +37,5 @@ export interface BaseImplementation<RepositoryType> {
   update: (
     fn: (store: RepositoryType) => RepositoryType,
   ) => Effect.Effect<void, never, never>;
-  reset: () => Effect.Effect<void, never, never>
+  reset: () => Effect.Effect<void, never, never>;
 }
-
