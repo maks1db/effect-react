@@ -1,4 +1,4 @@
-import { Console, Duration, Effect, Stream, SubscriptionRef } from 'effect';
+import { Effect, Stream } from 'effect';
 
 import { Counter, counterValueChanged } from '../../features/counter';
 import {
@@ -13,16 +13,15 @@ export const program = Effect.gen(function* ($) {
   const counter = yield* $(Counter.Tag);
   const warningMessage = yield* $(WarningMessageStore.Tag);
 
-  const warningActiveOnClick$ = counter.changes.pipe(
+  const warningActiveOnClick = counter.subscribe.pipe(
     Stream.mapEffect(() =>
       Effect.map(warningMessage.get(), store => {
         return store.timer > 0;
       }),
     ),
-    Stream.tap(v => Console.log('WOW', v)),
   );
 
-  const clickOnActiveError = warningActiveOnClick$.pipe(
+  const clickOnActiveError = warningActiveOnClick.pipe(
     Stream.filter(Boolean),
     Stream.tap(() =>
       warningMessage.update(s => ({
@@ -30,19 +29,20 @@ export const program = Effect.gen(function* ($) {
         clickErrorCounter: s.clickErrorCounter + 1,
       })),
     ),
-    Stream.runDrain,
   );
 
-  const clickOnEmptyError = warningActiveOnClick$.pipe(
+  const clickOnEmptyError = warningActiveOnClick.pipe(
     Stream.filter(x => !x),
     Stream.tap(() =>
-      warningMessage.update(s => ({ ...s, timer: TIMEOUT_WARNING_SECONDS })),
+      warningMessage.update(() => ({
+        clickErrorCounter: 1,
+        timer: TIMEOUT_WARNING_SECONDS,
+      })),
     ),
-    Stream.runDrain,
   );
 
   yield* $(
-    Effect.all([clickOnActiveError, clickOnEmptyError], {
+    Effect.all([clickOnActiveError, clickOnEmptyError].map(Stream.runDrain), {
       concurrency: 'unbounded',
     }),
   );

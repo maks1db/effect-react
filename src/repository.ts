@@ -24,6 +24,7 @@ export const makeRepository = <RepositoryType>(
         update: fn => SubscriptionRef.update(ref, fn),
         get: () => SubscriptionRef.get(ref),
         reset: () => SubscriptionRef.set(ref, defaultValue),
+        subscribe: ref.changes.pipe(Stream.drop(1)),
       };
     }),
   );
@@ -38,4 +39,5 @@ export interface BaseImplementation<RepositoryType> {
     fn: (store: RepositoryType) => RepositoryType,
   ) => Effect.Effect<void, never, never>;
   reset: () => Effect.Effect<void, never, never>;
+  subscribe: Stream.Stream<RepositoryType, never, never>;
 }

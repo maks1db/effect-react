@@ -10,24 +10,26 @@ export const WarningMessageStore = makeRepository('features/warning-message', {
 export const program = Effect.gen(function* ($) {
   const store = yield* $(WarningMessageStore.Tag);
 
-  const interval = store.changes.pipe(
+  const interval = store.subscribe.pipe(
     Stream.map(x => x.timer),
     Stream.changes,
     Stream.filter(x => x > 0),
     Stream.debounce(Duration.seconds(1)),
     Stream.tap(() => store.update(s => ({ ...s, timer: s.timer - 1 }))),
-    Stream.runDrain,
   );
 
-  const reset = store.changes.pipe(
+  const reset = store.subscribe.pipe(
     Stream.map(x => x.timer),
     Stream.changes,
     Stream.filter(x => x === 0),
     Stream.tap(store.reset),
-    Stream.runDrain,
   );
 
-  yield* $(Effect.all([interval, reset], { concurrency: 'unbounded' }));
+  yield* $(
+    Effect.all([interval, reset].map(Stream.runDrain), {
+      concurrency: 'unbounded',
+    }),
+  );
 });
 
 runForkEffect(makeInspectorEffectProgram([WarningMessageStore]));
