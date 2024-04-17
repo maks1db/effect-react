@@ -1,6 +1,6 @@
 import { Duration, Effect, Stream } from 'effect';
-import { makeRepository, runForkEffect } from '../../../../../src';
-import { makeInspectorEffectProgram } from '../../shared/effect-inspector';
+import { makeRepository } from '../../../../../src';
+// import { makeInspectorEffectProgram } from '../../shared/effect-inspector';
 
 export const WarningMessageStore = makeRepository('features/warning-message', {
   timer: 0,
@@ -30,6 +30,6 @@ export const program = Effect.gen(function* ($) {
       concurrency: 'unbounded',
     }),
   );
-});
+}).pipe(Effect.provide(WarningMessageStore.Live));
 
-runForkEffect(makeInspectorEffectProgram([WarningMessageStore]));
+// runForkEffect(makeInspectorEffectProgram([WarningMessageStore]));

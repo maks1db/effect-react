@@ -1,4 +1,4 @@
-import { Effect, Stream } from 'effect';
+import { Effect, Layer, Stream } from 'effect';
 
 import { Counter, counterValueChanged } from '../../features/counter';
 import {
@@ -46,4 +46,4 @@ export const program = Effect.gen(function* ($) {
       concurrency: 'unbounded',
     }),
   );
-});
+}).pipe(Effect.provide(Layer.mergeAll(Counter.Live, WarningMessageStore.Live)));

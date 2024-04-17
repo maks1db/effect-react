@@ -1,11 +1,15 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable require-yield */
-import { Context, Effect, Option, Stream, flow } from 'effect';
+import { Effect, Option, Stream } from 'effect';
 import { assocPath, mergeDeepRight } from 'ramda';
 
-import { BaseImplementation } from './repository';
-import { StreamEffect } from './types';
+let TITLE = '';
+let ENABLE = false;
+
+let _instance: ReturnType<typeof initExtension>;
+
+// TODO: переделать в class
 
 const initExtension = (name: string, isDev = true) =>
   Option.gen(function* ($) {
@@ -21,6 +25,13 @@ const initExtension = (name: string, isDev = true) =>
     return yield* $(Option.some(instance));
   });
 
+export const initInspectParams = (title: string, enabled: boolean) => {
+  TITLE = title;
+  ENABLE = enabled;
+
+  _instance = initExtension(TITLE, ENABLE);
+};
+
 class InstanceStore {
   store: Store = {};
 
@@ -34,65 +45,31 @@ class InstanceStore {
   }
 }
 
-export const makeInspectInstance = (name: string, enableInspector = false) => {
-  const _instance = initExtension(name, enableInspector);
+export const makeInspectInstance = () => {
   const store = new InstanceStore();
 
-  const makeStream =
-    (defaultName?: string) =>
-    (value: Context.Tag<any, BaseImplementation<any>> | StreamEffect<any>) => {
-      const sendToDevtools = (currentName: string) =>
-        Stream.tap(data =>
-          Effect.tap(_instance, instance => {
-            const logObject = assocPath(currentName.split('/'), data, {});
-            const result = store.update(logObject);
-
-            instance.send(currentName, result);
-          }),
-        );
-      if (Context.isTag(value)) {
-        return Effect.flatMap(value, ref => {
-          return ref.changes.pipe(sendToDevtools(value.key), Stream.runDrain);
-        });
-      }
-
-      if (Effect.isEffect(value)) {
-        return value.pipe(
-          Effect.flatMap(
-            flow(sendToDevtools(`${defaultName}/combined$`), Stream.runDrain),
-          ),
-        );
-      }
-
-      return Effect.succeed(0);
-    };
-
-  const makeInspectorEffectProgram = (
-    stores: (
-      | { Tag: Context.Tag<any, BaseImplementation<any>> }
-      | StreamEffect<any>
-    )[],
-    defaultName?: string,
+  const sendChanges = (
+    changes: Stream.Stream<any, never, never>,
+    unitName: string,
   ) => {
-    return Effect.gen(function* ($) {
-      if (Option.isNone(_instance)) {
-        return;
-      }
+    if (!_instance) {
+      _instance = initExtension(TITLE, ENABLE);
+    }
+    const sendToDevtools = (currentName: string) =>
+      Stream.tap(data =>
+        Effect.tap(_instance, instance => {
+          const logObject = assocPath(currentName.split('/'), data, {});
+          const result = store.update(logObject);
 
-      const streams$ = stores
-        .map(x => {
-          if ('Tag' in x) {
-            return x.Tag;
-          }
-          return x;
-        })
-        .map(makeStream(defaultName));
+          instance.send(currentName, result);
+        }),
+      );
 
-      yield* $(Effect.all(streams$, { concurrency: 'unbounded' }));
-    });
+    const program = changes.pipe(sendToDevtools(unitName), Stream.runDrain);
+    Effect.runFork(program);
   };
 
-  return { makeInspectorEffectProgram };
+  return { sendChanges };
 };
 
 type ReduxDevTools = {
