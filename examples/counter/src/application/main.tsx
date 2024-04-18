@@ -4,11 +4,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 
 import { Main } from '../pages/main';
-import { initInspectParams } from '../../../../src';
+import { startDevtoolsInspector } from '../../../../src';
 
-initInspectParams('Counter example', process.env.NODE_ENV === 'development');
+if (process.env.NODE_ENV === 'development') {
+  startDevtoolsInspector('Counter example');
+}
 
-console.log(process.env.NODE_ENV);
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Main />

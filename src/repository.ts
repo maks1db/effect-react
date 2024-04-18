@@ -2,13 +2,12 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Context, Effect, Layer, Stream, SubscriptionRef } from 'effect';
 
-import { makeInspectInstance } from './inspect';
+import { DevtoolsLogger } from './inspector/DevtoolsLogger';
+import { addInspectorProgram } from './inspector/inspector-runtime';
 
 export interface RepositoryTag {
   readonly _: unique symbol;
 }
-
-const inspectInstance = makeInspectInstance();
 
 export const makeRepository = <RepositoryType>(
   name: string,
@@ -17,7 +16,14 @@ export const makeRepository = <RepositoryType>(
   const ref = Effect.runSync(SubscriptionRef.make(defaultValue));
   const Tag = Context.GenericTag<BaseImplementation<RepositoryType>>(name);
 
-  inspectInstance.sendChanges(ref.changes, name);
+  const loggerProgram = ref.changes.pipe(
+    Stream.tap(data =>
+      Effect.flatMap(DevtoolsLogger, logger => logger.log(name, data)),
+    ),
+    Stream.runDrain,
+  );
+
+  addInspectorProgram(loggerProgram);
 
   const Live = Layer.succeed(Tag, {
     changes: ref.changes,
