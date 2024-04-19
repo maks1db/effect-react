@@ -14,7 +14,7 @@ export const makeRepository = <RepositoryType>(
   defaultValue: RepositoryType,
 ) => {
   const ref = Effect.runSync(SubscriptionRef.make(defaultValue));
-  const Tag = Context.GenericTag<BaseImplementation<RepositoryType>>(name);
+  const Tag = Context.GenericTag<Repository<RepositoryType>>(name);
 
   const loggerProgram = ref.changes.pipe(
     Stream.tap(data =>
@@ -37,7 +37,7 @@ export const makeRepository = <RepositoryType>(
   return { Tag, Live };
 };
 
-export interface BaseImplementation<RepositoryType> {
+export interface Repository<RepositoryType> {
   changes: Stream.Stream<RepositoryType, never, never>;
   get: () => Effect.Effect<RepositoryType, never, never>;
   update: (

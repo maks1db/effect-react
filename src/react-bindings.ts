@@ -2,11 +2,11 @@
 import { Context, Effect, Fiber, Layer, pipe, Stream } from 'effect';
 import { useEffect, useMemo, useState } from 'react';
 
-import { BaseImplementation } from './repository';
+import { Repository } from './repository';
 
 export type RepositoryType<Store> = {
-  Tag: Context.Tag<BaseImplementation<Store>, BaseImplementation<Store>>;
-  Live: Layer.Layer<BaseImplementation<Store>, never, never>;
+  Tag: Context.Tag<Repository<Store>, Repository<Store>>;
+  Live: Layer.Layer<Repository<Store>, never, never>;
 };
 
 export function useSubscription<Store>(
@@ -42,7 +42,7 @@ export function useSubscription<Store, SelectorFnType>(
       Stream.tap(s => Effect.sync(() => updateState(s))),
       Stream.runDrain,
     );
-    const fiber = Effect.runFork(program.pipe(Effect.provide(Live)));
+    const fiber = Effect.runFork(program);
     return () => {
       Effect.runPromise(Fiber.interrupt(fiber));
     };
