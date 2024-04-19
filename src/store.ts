@@ -9,11 +9,8 @@ export const createStore = <TagName extends string, StoreType>({
   name,
   defaultValue,
 }: StoreProps<StoreType, TagName>) => {
-  interface StoreTag {
-    readonly _: unique symbol;
-  }
   const ref = Effect.runSync(SubscriptionRef.make(defaultValue));
-  const Tag = Context.GenericTag<StoreTag, Store<StoreType>>(name);
+  const Tag = Context.GenericTag<TagName, Store<StoreType>>(name);
 
   const loggerProgram = ref.changes.pipe(
     Stream.tap(data =>
