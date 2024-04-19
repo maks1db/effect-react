@@ -2,10 +2,10 @@
 import { Data, Effect } from 'effect';
 import { createStore } from './store';
 
-interface CreateQueryParams<Params, QueryValue> {
+interface CreateQueryParams<Params, QueryValue, QueryName> {
   handler: (params: Params) => Promise<QueryValue>;
   initialData?: QueryValue;
-  name: string;
+  name: QueryName;
 }
 
 interface QueryProps<Value> {
@@ -16,16 +16,19 @@ interface QueryProps<Value> {
 
 class QueryError extends Data.TaggedError('QueryError')<{ message: string }> {}
 
-export function createQuery<Params, QueryValue>(
-  params: CreateQueryParams<Params, QueryValue>,
+export function createQuery<Params, QueryValue, QueryName extends string>(
+  params: CreateQueryParams<Params, QueryValue, QueryName>,
 ) {
-  const repository = createStore<QueryProps<QueryValue>>(params.name, {
-    // TODO: bad types. must fix
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    data: params.initialData ?? null,
-    pending: false,
-    error: null,
+  const repository = createStore<QueryName, QueryProps<QueryValue>>({
+    defaultValue: {
+      // TODO: bad types. must fix
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      data: params.initialData ?? null,
+      pending: false,
+      error: null,
+    },
+    name: params.name,
   });
 
   const start = (queryParams: Params) => {

@@ -1,9 +1,12 @@
 import { Duration, Effect, Stream } from 'effect';
 import { createStore } from '../../../../../src';
 
-export const WarningMessageStore = createStore('features/warning-message', {
-  timer: 0,
-  clickErrorCounter: 0,
+export const WarningMessageStore = createStore({
+  name: 'features/warning-message',
+  defaultValue: {
+    timer: 0,
+    clickErrorCounter: 0,
+  },
 });
 
 export const program = Effect.gen(function* ($) {

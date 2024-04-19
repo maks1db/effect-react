@@ -5,16 +5,15 @@ import { Context, Effect, Layer, Stream, SubscriptionRef } from 'effect';
 import { DevtoolsLogger } from './inspector/DevtoolsLogger';
 import { addInspectorProgram } from './inspector/inspector-runtime';
 
-export interface RepositoryTag {
-  readonly _: unique symbol;
-}
-
-export const createStore = <RepositoryType>(
-  name: string,
-  defaultValue: RepositoryType,
-) => {
+export const createStore = <TagName extends string, StoreType>({
+  name,
+  defaultValue,
+}: StoreProps<StoreType, TagName>) => {
+  interface StoreTag {
+    readonly _: unique symbol;
+  }
   const ref = Effect.runSync(SubscriptionRef.make(defaultValue));
-  const Tag = Context.GenericTag<Repository<RepositoryType>>(name);
+  const Tag = Context.GenericTag<StoreTag, Store<StoreType>>(name);
 
   const loggerProgram = ref.changes.pipe(
     Stream.tap(data =>
@@ -37,13 +36,18 @@ export const createStore = <RepositoryType>(
   return { Tag, Live };
 };
 
-export interface Repository<RepositoryType> {
-  changes: Stream.Stream<RepositoryType, never, never>;
-  get: () => Effect.Effect<RepositoryType, never, never>;
+interface StoreProps<StoreType, TagName> {
+  name: TagName;
+  defaultValue: StoreType;
+}
+
+export interface Store<StoreType> {
+  changes: Stream.Stream<StoreType, never, never>;
+  get: () => Effect.Effect<StoreType, never, never>;
   update: (
-    fn: (store: RepositoryType) => RepositoryType,
+    fn: (store: StoreType) => StoreType,
   ) => Effect.Effect<void, never, never>;
   reset: () => Effect.Effect<void, never, never>;
-  subscribe: Stream.Stream<RepositoryType, never, never>;
-  __defaultValue: RepositoryType;
+  subscribe: Stream.Stream<StoreType, never, never>;
+  __defaultValue: StoreType;
 }

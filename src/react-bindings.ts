@@ -1,23 +1,24 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-constraint */
 /* eslint-disable no-redeclare */
 import { Context, Effect, Fiber, Layer, pipe, Stream } from 'effect';
 import { useEffect, useMemo, useState } from 'react';
 
-import { Repository } from './repository';
+import { Store } from './store';
 
-export type RepositoryType<Store> = {
-  Tag: Context.Tag<Repository<Store>, Repository<Store>>;
-  Live: Layer.Layer<Repository<Store>, never, never>;
+export type StoreType<StoreValue, StoreName> = {
+  Tag: Context.Tag<StoreName, Store<StoreValue>>;
+  Live: Layer.Layer<StoreName, never, never>;
 };
 
-export function useSubscription<Store>(
-  repository: RepositoryType<Store>,
+export function useSubscription<Store, StoreName>(
+  repository: StoreType<Store, StoreName>,
 ): Store;
-export function useSubscription<Store, SelectorFnType>(
-  repository: RepositoryType<Store>,
+export function useSubscription<Store, SelectorFnType, StoreName>(
+  repository: StoreType<Store, StoreName>,
   selectorFn: (store: Store) => SelectorFnType,
 ): SelectorFnType;
-export function useSubscription<Store, SelectorFnType>(
-  { Live, Tag }: RepositoryType<Store>,
+export function useSubscription<Store, SelectorFnType, StoreName>(
+  { Live, Tag }: StoreType<Store, StoreName>,
   selectorFn?: (store: Store) => SelectorFnType,
 ) {
   const runnableService = useMemo(

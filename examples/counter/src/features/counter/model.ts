@@ -2,7 +2,10 @@ import { Console, Effect } from 'effect';
 
 import { createStore } from '../../../../../src';
 
-export const Counter = createStore('features/counter', 0);
+export const Counter = createStore({
+  defaultValue: 0,
+  name: 'features/counter',
+});
 
 export const counterValueChanged = (value: number) => {
   const runnable = Effect.gen(function* ($) {
