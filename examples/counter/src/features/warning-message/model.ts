@@ -1,8 +1,7 @@
 import { Duration, Effect, Stream } from 'effect';
-import { makeRepository } from '../../../../../src';
-// import { makeInspectorEffectProgram } from '../../shared/effect-inspector';
+import { createStore } from '../../../../../src';
 
-export const WarningMessageStore = makeRepository('features/warning-message', {
+export const WarningMessageStore = createStore('features/warning-message', {
   timer: 0,
   clickErrorCounter: 0,
 });

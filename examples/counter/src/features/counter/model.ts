@@ -1,8 +1,8 @@
 import { Console, Effect } from 'effect';
 
-import { makeRepository } from '../../../../../src';
+import { createStore } from '../../../../../src';
 
-export const Counter = makeRepository('features/counter', 0);
+export const Counter = createStore('features/counter', 0);
 
 export const counterValueChanged = (value: number) => {
   const runnable = Effect.gen(function* ($) {
@@ -15,8 +15,3 @@ export const counterValueChanged = (value: number) => {
 
   Effect.runSync(runnable);
 };
-
-// // @ts-ignore
-// Effect.runPromise(
-//   makeInspectorEffectProgram([Counter]).pipe(Effect.provide(Counter.Live)),
-// );

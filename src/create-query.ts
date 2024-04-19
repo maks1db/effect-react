@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { Data, Effect } from 'effect';
-import { makeRepository } from './repository';
+import { createStore } from './store';
 
 interface CreateQueryParams<Params, QueryValue> {
   handler: (params: Params) => Promise<QueryValue>;
@@ -19,7 +19,7 @@ class QueryError extends Data.TaggedError('QueryError')<{ message: string }> {}
 export function createQuery<Params, QueryValue>(
   params: CreateQueryParams<Params, QueryValue>,
 ) {
-  const repository = makeRepository<QueryProps<QueryValue>>(params.name, {
+  const repository = createStore<QueryProps<QueryValue>>(params.name, {
     // TODO: bad types. must fix
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore

@@ -9,7 +9,7 @@ export interface RepositoryTag {
   readonly _: unique symbol;
 }
 
-export const makeRepository = <RepositoryType>(
+export const createStore = <RepositoryType>(
   name: string,
   defaultValue: RepositoryType,
 ) => {

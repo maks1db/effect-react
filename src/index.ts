@@ -1,5 +1,5 @@
 export { useProgram, useSubscription } from './react-bindings';
 
 export { startDevtoolsInspector } from './inspector/inspector-runtime';
-export { makeRepository } from './repository';
+export { createStore } from './store';
 export { createQuery } from './create-query';
