@@ -1,7 +1,7 @@
 import { createQuery } from '../../../src'
 
 export const query = createQuery({
-    handler: (message: string) => new Promise((resolve) => {
+    handler: (message: string) => new Promise<string>((resolve) => {
         setTimeout(() => {
             resolve(message)
         }, 1000)
@@ -11,11 +11,10 @@ export const query = createQuery({
 })
 
 export const errorQuery = createQuery({
-    handler: (message: string) => new Promise((_, reject) => {
+    handler: (message: string) => new Promise<string>((_, reject) => {
         setTimeout(() => {
             reject(new Error(message))
         }, 1000)
     }),
     name: 'query/error',
-    initialData: ''
 })

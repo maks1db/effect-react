@@ -2,25 +2,28 @@
 import { Data, Effect } from 'effect';
 import { makeRepository } from './repository';
 
-interface CreateQueryParams<QueryValue, Params> {
+interface CreateQueryParams<Params, QueryValue> {
   handler: (params: Params) => Promise<QueryValue>;
-  initialData: QueryValue;
+  initialData?: QueryValue;
   name: string;
+}
+
+interface QueryProps<Value> {
+  data: Value;
+  pending: boolean;
+  error: QueryError | null;
 }
 
 class QueryError extends Data.TaggedError('QueryError')<{ message: string }> {}
 
-export function createQuery<QueryValue, Params>(
-  params: CreateQueryParams<QueryValue, Params>,
+export function createQuery<Params, QueryValue>(
+  params: CreateQueryParams<Params, QueryValue>,
 ) {
-  interface QueryProps {
-    data: QueryValue;
-    pending: boolean;
-    error: QueryError | null;
-  }
-
-  const repository = makeRepository<QueryProps>(params.name, {
-    data: params.initialData,
+  const repository = makeRepository<QueryProps<QueryValue>>(params.name, {
+    // TODO: bad types. must fix
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    data: params.initialData ?? null,
     pending: false,
     error: null,
   });
