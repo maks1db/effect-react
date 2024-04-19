@@ -5,12 +5,12 @@ import { Context, Effect, Layer, Stream, SubscriptionRef } from 'effect';
 import { DevtoolsLogger } from './inspector/DevtoolsLogger';
 import { addInspectorProgram } from './inspector/inspector-runtime';
 
-export const createStore = <StoreType>({
+export const createStore = <StoreType, StoreKey extends string = 'unnamed'>({
   defaultValue,
   name,
-}: StoreProps<StoreType>) => {
+}: StoreProps<StoreType, StoreKey>) => {
   const ref = Effect.runSync(SubscriptionRef.make(defaultValue));
-  const Tag = Context.GenericTag<Store<StoreType>>(name);
+  const Tag = Context.GenericTag<typeof name, Store<StoreType>>(name);
 
   const loggerProgram = ref.changes.pipe(
     Stream.tap(data =>
@@ -33,8 +33,8 @@ export const createStore = <StoreType>({
   return { Tag, Live };
 };
 
-interface StoreProps<StoreType> {
-  readonly name: string;
+interface StoreProps<StoreType, StoreKey> {
+  readonly name: StoreKey;
   readonly defaultValue: StoreType;
 }
 

@@ -2,7 +2,7 @@ import { Console, Effect } from 'effect';
 
 import { createStore } from '../../../../../src';
 
-export const Counter = createStore<number>({
+export const Counter = createStore<number, 'features/counter'>({
   defaultValue: 0,
   name: 'features/counter',
 });
